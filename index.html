@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Semantic Graph</title>
+
+<!-- CSS Files -->
+<link type="text/css" href="Jit/Examples/css/base.css" rel="stylesheet" />
+<link type="text/css" href="Jit/Examples/css/Hypertree.css" rel="stylesheet" />
+<link type="text/css" href="semanticgraph.css" rel="stylesheet" />
+
+<!--[if IE]><script language="javascript" type="text/javascript" src="Jit/Extras/excanvas.js"></script><![endif]-->
+
+<!-- JQuery Library File -->
+<script language="javascript" type="text/javascript" src="jquery-1.4.2.min.js"></script>
+
+<!-- JIT Library File -->
+<script language="javascript" type="text/javascript" src="Jit/jit.js"></script>
+
+<!-- Basic functions -->
+<script language="javascript" type="text/javascript" src="basic.js"></script>
+
+<!-- Content loaders which are used to augment nodes and edges -->
+<script language="javascript" type="text/javascript" src="content-loaders.js"></script>
+
+<!-- Formatters are used to format string outputs on screen -->
+<script language="javascript" type="text/javascript" src="formatters.js"></script>
+
+<!-- Traversers explore outgoing edges and extend the graph -->
+<script language="javascript" type="text/javascript" src="traversers.js"></script>
+
+<!-- Configurators which can be used to set up an available config -->
+<script language="javascript" type="text/javascript" src="configurators.js"></script>
+
+<!-- Configurations -->
+<script language="javascript" type="text/javascript" src="config.js"></script>
+
+<!-- Hypertree Controller -->
+<script language="javascript" type="text/javascript" src="hypertree.js"></script>
+
+<!-- Main Runner File -->
+<script language="javascript" type="text/javascript" src="semanticgraph.js"></script>
+
+</head>
+
+<body>
+<div id="wrapper">
+<form>
+<div id="reload-button-holder">
+    <input type="button" id="reload-button" value="Reload" />
+</div>
+<a id="config-panel-header">
+    Show Configuration
+</a>
+
+<div id="config-panel">
+
+<h3>General Settings</h3>
+<h3>Node Configuration</h3>
+<h3 style="width: 34%">Edge Configuration</h3>
+
+<div class="config-section">
+<p>
+<strong>Used Relations:</strong>
+</p>
+<ul id="config-relation-list">
+</ul>
+</div>
+
+<div class="config-section">
+<p>
+<strong>Start Node:</strong>
+<input type="text" id="start-node" name="start-node" value="http://dblp.l3s.de/d2r/resource/publications/books/aw/AbiteboulHV95" />
+</p>
+<p>
+<strong>Start Node Type:</strong>
+<span id="start-node-type-holder"></span>
+</p>
+<ul id="config-nodes-list">
+</ul>
+</div>
+<div style="width: 34%" class="config-section">
+<ul id="config-edges-list">
+</ul>
+</div>
+</div>
+</form>
+
+<div id="left-col">
+	<div id="log"></div>
+	<div id="inner-details"></div>
+</div>
+<div id="infovis"></div>
+</div>    
+</body>
+</html>
