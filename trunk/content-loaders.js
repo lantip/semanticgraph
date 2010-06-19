@@ -1,75 +1,53 @@
 /**
- * There are different loaders for node data. Which of them should be choosen
- * to load a certain type of node is saved in the global contentLoaders variable
- * on the bottom of this file.
- */
-
-/**
- * General content loader for query based node types.
+ * Content loaders are used to augment nodes and edges.
  * 
- * @param type the node type
- * @param id node id which should be augmented 
+ * @author Felix Stahlberg
  */
-function queryLoader(query, id, callbackFunction) {
-	var req = Config.req;
-	req[Config.reqQueryField] = String.sprintf(query, id);
-	$.getJSON(Config.queryURL,
-		req,
-		function(data) {
-			callbackFunction(id, data.results.bindings);
-		});
-}
 
-/**
- * Content loader of node type "uri".
- * 
- * @param id node id which should be augmented
- */
-function uriContentLoader(id) {
-	return queryLoader(Config.loaderQueries["uri"], id, augmentNodeCallback);
-}
+var ContentLoaders = {
+	
+	/**
+	 * Query which is used to augment elements identified by uri.
+	 */
+	_uriQuery : false,
+	
+	/**
+	 * Content loader which loads no content.
+	 * 
+	 * @param node which should be augmented (not used)
+	 */
+	none : function(node) {
+		return true;
+	},
+		
+	/**
+	 * Content loader of type "uri".
+	 * 
+	 * @param node which should be augmented
+	 * @see queryLoader
+	 */
+	uri : function(node) {
+		if (!ContentLoaders._uriQuery) {// Create _uriQuery
+			ContentLoaders._uriQuery = 
+				CoreConfig.prefix 
+				+ "SELECT DISTINCT ?p ?o WHERE { <%s> ?p ?o . ";
+			for (var edgeType in AvailableConfigs.edgeTypes) {
+				ContentLoaders._uriQuery += 
+					"FILTER (?p != " + edgeType + ").";
+			}
+			ContentLoaders._uriQuery += "} LIMIT 50";
+		}
+		return queryLoader(ContentLoaders._uriQuery, node, 
+				HypertreeController.augmentNodeCallback);
+	},
 
-/**
- * Content loader of node type "bnode".
- * 
- * @param id node id which should be augmented
- */
-function bnodeContentLoader(id) {
-	Log.write("Loading bnodes is not implemented");
-	return false;
-}
-
-/**
- * Traverser of node type "uri".
- * 
- * @param id node id which should be traversed
- */
-function uriTraverser(id) {
-	return queryLoader(Config.traverserQueries["uri"], id, centerNodeCallback);
-}
-
-/**
- * Traverser of node type "bnode".
- * 
- * @param id node id which should be augmented
- */
-function bnodeTraverser(id) {
-	Log.write("Traversing bnodes is not implemented");
-	return false;
-}
-
-/**
- * Content loaders of available node types.
- */
-var contentLoaders = {
-	"uri": uriContentLoader,
-	"bnode": bnodeContentLoader
-};
-
-/**
- * Traversers of available node types.
- */
-var traversers = {
-	"uri": uriTraverser,
-	"bnode": bnodeTraverser
+	/**
+	 * Content loader of type "bnode".
+	 * 
+	 * @param node which should be augmented
+	 */
+	bnode : function(node) {
+		Log.write("Loading bnodes is not implemented");
+		return false;
+	}
 };
