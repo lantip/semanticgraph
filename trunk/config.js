@@ -12,6 +12,8 @@ var CoreConfig = {
 	maxDepth : 1,
 	configurator : Configurators.panel,
 	augmentInterval: 500,
+	defaultNodeColor : "red",
+	defaultEdgeColor : "turquoise",
 	prefix : "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
 		+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 		+ "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
@@ -24,9 +26,10 @@ var CoreConfig = {
  */
 var AvailableConfigs = {
 	colors : {
-		"red" : "#f00",
-		"yellow" : "#ff0",
-		"green" : "#0f0"
+		"red" : "#ff0000",
+		"turquoise" : "#008888",
+		"yellow" : "#ffff00",
+		"green" : "#00ff00"
 	},
 	nodeTypes : {
 		"rdf:type foaf:person" : {
