@@ -117,6 +117,9 @@ var Configurators = {
 						}
 						config[mapping[src]][id]["style"] =
 							this.state[src][id]["style"];
+						config[mapping[src]][id]["color"] =
+							AvailableConfigs.colors[
+							                  this.state[src][id]["color"]];
 						config[mapping[src]][id]["server"] =
 							AvailableConfigs.servers[
 							                  this.state[src][id]["server"]];
@@ -152,6 +155,7 @@ var Configurators = {
 				name: AvailableConfigs.nodeTypes[id].name,
 				style: AvailableConfigs.nodeTypes[id].defaultStyle,
 				server: AvailableConfigs.nodeTypes[id].defaultServer,
+				color: CoreConfig.defaultNodeColor,
 				displayed: false
 			};
 		},
@@ -166,6 +170,7 @@ var Configurators = {
 				name: AvailableConfigs.edgeTypes[id].name,
 				style: AvailableConfigs.edgeTypes[id].defaultStyle,
 				server: AvailableConfigs.edgeTypes[id].defaultServer,
+				color: CoreConfig.defaultEdgeColor,
 				displayed: false
 			};
 		},
@@ -248,6 +253,8 @@ var Configurators = {
 		 */
 		createNodeListElement : function(id, el) {
 			var html = '<li><em>' + el.name + "</em> is displayed as "
+				+ this.createSelectBox("config-panel-nodes-color-" + id,
+					AvailableConfigs.colors, el.color) + " "
 				+ this.createSelectBox("config-panel-nodes-style-" + id,
 					AvailableConfigs.nodeStyles, el.style);
 			if (AvailableConfigs.nodeTypes[id].contentLoader 
@@ -270,8 +277,10 @@ var Configurators = {
 		 */
 		createEdgeListElement : function(id, el) {
 			var html = '<li><em>' + el.name + "</em> is displayed as "
-			+ this.createSelectBox("config-panel-edges-style-" + id,
-				AvailableConfigs.edgeStyles, el.style);
+				+ this.createSelectBox("config-panel-edges-color-" + id,
+					AvailableConfigs.colors, el.color) + " "
+				+ this.createSelectBox("config-panel-edges-style-" + id,
+					AvailableConfigs.edgeStyles, el.style);
 			if (AvailableConfigs.edgeTypes[id].contentLoader 
 					!= ContentLoaders.none) {
 				html += " and loaded from "

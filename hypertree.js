@@ -75,11 +75,13 @@ var HypertreeController = {
 	        //Change node and edge styles such as
 	        //color, width and dimensions.
 	        Node: {
+	    		'overridable': true,
 	            dim: 9,
 	            color: "#f00"
 	        },
 	        
 	        Edge: {
+	        	'overridable': true,
 	            lineWidth: 2,
 	            color: "#088"
 	        },
@@ -381,6 +383,7 @@ var HypertreeController = {
 			adjacencies : [ ],
 			data : {
 				type : nodeType,
+				"$color": HypertreeController._config.nodeTypes[nodeType].color,
 				"$type": HypertreeController._config.nodeTypes[nodeType].style,
 				config : AvailableConfigs.nodeTypes[nodeType],
 				server : HypertreeController._config.nodeTypes[nodeType].server,
@@ -441,6 +444,7 @@ var HypertreeController = {
 		var neighboursAdded = false;
 		var neighbourNodeType = node.data.outgoingEdges[edgeId].toType;
 		var edgeStyle = node.data.outgoingEdges[edgeId].style;
+		var edgeColor = node.data.outgoingEdges[edgeId].color;
 		// Evaluating
 		for (var i in data) {
 			binding = data[i];
@@ -450,6 +454,7 @@ var HypertreeController = {
 					nodeTo : neighbour,
 					data : {
 						"$type" : edgeStyle,
+						"$color" : edgeColor,
 						config : node.data.outgoingEdges[edgeId]
 					}
 				});
@@ -466,6 +471,7 @@ var HypertreeController = {
 						nodeTo : binding.adj.value,
 						data : {
 							"$type" : edgeStyle,
+							"$color" : edgeColor,
 							config : node.data.outgoingEdges[edgeId]
 						}
 					});
