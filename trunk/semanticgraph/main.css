@@ -1,0 +1,88 @@
+@CHARSET "UTF-8";
+
+html, body {
+	background-color: #fff;
+	text-align: left;
+}
+
+div#wrapper {
+	height: 100%;
+}
+
+div#reload-button-holder {
+	position: absolute;
+	right: 0;
+	padding: 3px;
+}
+
+div#reload-button-holder input {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+#config-panel-header {
+	display: block;
+	border-bottom: 1px solid #23A4FF;
+	text-align: center;
+	line-height: 34px;
+	font-weight: bold;
+	background-color: #ccc;
+}
+
+#config-panel-header:hover {
+	background-color: #eee;
+	cursor: pointer;
+}
+
+div#config-panel {
+	position: absolute;
+	border-bottom: 1px solid #23A4FF;
+	background-color: #eee;
+	width: 100%;
+	z-index: 100;
+	display: none;
+	overflow: hidden;
+}
+
+div#config-panel div.config-section {
+	overflow: scroll;
+	height: 150px;
+}
+
+div#config-panel p {
+	padding: 4px;
+	margin: 0;
+}
+
+ul#config-relation-list {
+	list-style-type: none;
+	padding: 4px;
+	margin: 0;
+}
+
+div#infovis {
+	background-color: #F2F2F2;
+	margin: 0;
+}
+
+div#left-col {
+	float: left;
+	width: 250px;
+	height: 100%;
+}
+
+div#inner-details {
+	height: 100%;
+	margin: 0;
+	padding: 7px;
+	overflow: scroll;
+}
+
+div#log {
+	position: static;
+	top: 0;
+	background-color: #F2F2F2;
+	height: 20px;
+	color: #888;
+	padding-left: 3px;
+}
