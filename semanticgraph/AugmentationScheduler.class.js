@@ -4,14 +4,17 @@
  * important and starvation is not critical.
  * Consider following definitions:
  * node n is 'centered' :<=> n is centered, but not 'explored'
+ * node n is 'displayed' :<=> n is displayed on the screen, but neither 'centered'
+ * 							  nor 'explored'
  * node n is 'satisfied' :<=> n has at least Config.desiredChildren
  * 							  children or all children are explored.
  * node n is 'explored' :<=> n is 'satisfied' and has at least Config.desiredAttributes
  * 							 attributes or all attributes are explored.
  * node n is 'completed' <=> all children and attributes are explored
- * The scheduler has four queues:
- * 	queue 'centered': length: 1. All centered node.
- * 	queue 'unsatisfied': All nodes not satisfied and not in 'centered'
+ * The scheduler has five queues:
+ * 	queue 'centered': length: 1. The centered node.
+ * 	queue 'displayed': All displayed nodes not in 'centered'
+ * 	queue 'unsatisfied': All nodes not satisfied and not in 'displayed'
  *  queue 'unexplored': All nodes not explored and not in 'unsatisfied'
  *  queue 'uncompleted': All nodes not completed and not in 'unexplored'
  * If a node do not meet the requirements for a queue anymore, it is added to 
@@ -25,6 +28,7 @@ function AugmentationScheduler() {
 	 */
 	var queues = [
 	        [], // centered
+	        [], // displayed
 			[], // unsatisfied
 			[], // unexplored
 			[] // uncompleted
@@ -35,7 +39,8 @@ function AugmentationScheduler() {
 	 */
 	var augmentIntervals = [
 	        0, // centered
-			500, // unsatisfied
+	        200, // displayed
+			2000, // unsatisfied
 			4000, // unexplored
 			6000, // uncompleted
 			1000 // idle
@@ -57,19 +62,22 @@ function AugmentationScheduler() {
 	 */
 	var processor = false;
 	
+	var model = false;
+	
 	/**
 	 * Initalize the scheduler.
 	 */
-	this.init = function(target, model) {
+	this.init = function(target, m) {
 		augScheduler = this;
 		processor = target;
+		model = m;
 		model.addObserver(this);
 		this.timeoutProcessing();
 	};
 	
 	/**
 	 * Add a node to the centered queue. If there is already a node in this
-	 * queue, put it in 'unsatisfied'.
+	 * queue, put it in 'displayed'.
 	 * 
 	 * @param node node to be added
 	 */
@@ -82,13 +90,23 @@ function AugmentationScheduler() {
 	};
 	
 	/**
+	 * Add a node to the 'displayed' queue. Please note that there are no
+	 * limitations how often and to how many queues a node is assigned.
+	 * 
+	 * @param node node to be added
+	 */
+	this.addDisplayedNode = function(node) {
+		queues[1].push(node);
+	};
+	
+	/**
 	 * Add a node to the 'unsatisfied' queue. Please note that there are no
 	 * limitations how often and to how many queues a node is assigned.
 	 * 
 	 * @param node node to be added
 	 */
 	this.addNode = function(node) {
-		queues[1].push(node);
+		queues[2].push(node);
 	};
 	
 	/**
@@ -114,15 +132,20 @@ function AugmentationScheduler() {
 						   node.data.attrs.length <= Config.desiredAttributes
 						|| node.data.children.length <= Config.desiredChildren;
 					break;
-				case 1: // unsatisfied
+				case 1: // displayed
+					rightQueue = model.isDisplayed(node) && (
+						   node.data.attrs.length <= Config.desiredAttributes
+						|| node.data.children.length <= Config.desiredChildren);
+					break;
+				case 2: // unsatisfied
 					rightQueue = 
 						node.data.children.length <= Config.desiredChildren;
 					break;
-				case 2: // unexplored
+				case 3: // unexplored
 					rightQueue = 
 						node.data.attrs.length <= Config.desiredAttributes;
 					break;
-				case 3: // uncompleted
+				case 4: // uncompleted
 					rightQueue = true;
 				}
 				if (!rightQueue) {
@@ -175,7 +198,7 @@ function AugmentationScheduler() {
 	this.update = function(o, arg) {
 		switch (arg.type) {
 		case "addNode": // A node was added in GraphModel
-			this.addNode(arg.arg);
+			this.addDisplayedNode(arg.arg);
 			break;
 		}
 	};

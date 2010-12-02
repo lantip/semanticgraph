@@ -17,6 +17,12 @@ function GraphModel() {
 	 */
 	var graph = [ ];
 	
+	/*
+	 * List of all ids of displayed nodes. Ids are stored as keys in order to
+	 * provide an effective implementation of isDisplayed().
+	 */
+	var displayedNodeIds = [ ];
+	
 	var centerNode = false;
 
 	/**
@@ -103,12 +109,14 @@ function GraphModel() {
 	 * Setter for center node
 	 */
 	this.setCenterNode = function(node) {
-		centerNode = node;
-		this.setChanged();
-		this.notifyObservers({
-			"type": "centerNode",
-			"arg": node
-		});
+		if (node && (!centerNode || centerNode.id != node.id)) {
+			centerNode = node;
+			this.setChanged();
+			this.notifyObservers({
+				"type": "centerNode",
+				"arg": node
+			});
+		}
 	};
 	
 	/**
@@ -142,6 +150,32 @@ function GraphModel() {
 			"type": "nodeLayout",
 			"arg": nodeLayouts[id]
 		});
+	};
+	
+	/**
+	 * Unmark all nodes marked as 'displayed'.
+	 */
+	this.unmarkAllNodes = function() {
+		displayedNodeIds = [ ];
+	};
+	
+	/**
+	 * Mark a node as 'displayed'.
+	 * 
+	 * @param id node id of the node which should be displayed
+	 */
+	this.markNodeAsDisplayed = function(id) {
+		displayedNodeIds[id] = true;
+	};
+	
+	/**
+	 * Check whether a node is marked as 'displayed' or not.
+	 * 
+	 * @param id node id of the node which should be checked
+	 * @return TRUE if the node is marked as 'displayed', FALSE otherwise
+	 */
+	this.isDisplayed = function(id) {
+		return displayedNodeIds[id] ? displayedNodeIds[id] : false;
 	};
 	
 	/*

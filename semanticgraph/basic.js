@@ -102,7 +102,18 @@ $jit.ST.Plot.NodeTypes.implement({
     this.nodeHelper.rectangle.render('fill', {x: posX, y: posY}, width, height, canvas);  
     this.nodeHelper.rectangle.render('stroke', {x: posX, y: posY}, width, height, canvas);  
   }  
-}  
+},
+'stroke-ellipse': {  
+	  'render': function(node, canvas) {  
+	    var width = node.getData('width'),  
+	        height = node.getData('height'),  
+	        pos = this.getAlignedPos(node.pos.getc(true), width, height),  
+	        posX = pos.x + width/2,  
+	        posY = pos.y + height/2;  
+	    this.nodeHelper.ellipse.render('fill', {x: posX, y: posY}, width+25, height+25, canvas);  
+	    this.nodeHelper.ellipse.render('stroke', {x: posX, y: posY}, width+25, height+25, canvas);  
+	  }  
+	}
 });
 
 /**
