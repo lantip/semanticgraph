@@ -6,6 +6,7 @@
  */
 
 var st = false;
+var view = this;
 
 function GraphView(gPanel, iPanel, cPanel) {
 
@@ -16,7 +17,6 @@ function GraphView(gPanel, iPanel, cPanel) {
 	var infoPanel = iPanel;
 	var configPanel = cPanel;
 	
-	var view = this;
 	var model = false;
 	var infoPanelNode = false;
 
@@ -24,6 +24,7 @@ function GraphView(gPanel, iPanel, cPanel) {
 	 * Initalizations
 	 */
 	this.init = function(m) {
+		view = this;
 		model = m;
 		model.addObserver(this);
 		//Create a new ST instance
@@ -32,7 +33,7 @@ function GraphView(gPanel, iPanel, cPanel) {
 			transition: $jit.Trans.Quart.easeInOut,
 			//set distance between node and its children  
 			levelDistance : 50,
-			levelsToShow: 2, 
+			levelsToShow: 1, 
 			//offsetX : 130,
 			Node : {
 				overridable : true,
@@ -64,15 +65,19 @@ function GraphView(gPanel, iPanel, cPanel) {
 			 * than the one specified by the levelsToShow parameter.
 			 */
 			request : function(nodeId, level, onComplete) {
-				view.request(nodeId, onComplete);
-
+				if (level == 1) {
+					view.request(nodeId, onComplete);
+				} else {
+					onComplete.onComplete(nodeId, [ ]);
+				}
 			},
 
 			onCreateLabel : function(label, node) {
 		        label.id = node.id;              
 		        label.innerHTML = node.name;  
-		        label.onclick = function(){  
-		            st.onClick(node.id);  
+		        label.onclick = function(){
+		            st.onClick(node.id);
+		            view.setCenterNode(node);
 		        };
 				
 		        //set label styles  
@@ -105,6 +110,7 @@ function GraphView(gPanel, iPanel, cPanel) {
 			onBeforePlotNode : function(node) {
 				var layout = model.getNodeLayout(node.data.type);
 				node.Config.CanvasStyles.fillStyle = Config.colors[layout.color];
+				node.Config.type = layout.rendering;
 			},
 
 			// This method is called right before plotting
@@ -127,6 +133,7 @@ function GraphView(gPanel, iPanel, cPanel) {
 
 			onAfterCompute : function() {
 				Log.write("Loaded");
+				view.updateDisplayedMarks();
 			}  
 		});
 		st = this.st;
@@ -135,7 +142,7 @@ function GraphView(gPanel, iPanel, cPanel) {
 	};
 	
 	/**
-	 * Reload the space tree
+	 * Reload the space tree.
 	 */
 	this.reload = function() {
 		// load json data
@@ -143,6 +150,32 @@ function GraphView(gPanel, iPanel, cPanel) {
 		// compute node positions and layout
 		this.st.compute();
 		this.st.onClick(this.st.root);
+		infoPanelNode = model.getCenterNode();
+	};
+	
+	/**
+	 * Update the information stored in model concerning displayed nodes.
+	 */
+	this.updateDisplayedMarks = function() {
+		model.unmarkAllNodes();
+		$("div#infovis div.node").each(function() {
+			model.markNodeAsDisplayed($(this).attr("id"));
+		});
+	};
+	
+	/**
+	 * Synchronize children array with the new given dispChildrenOffset and
+	 * replot the canvas
+	 */
+	this.updateDispChildrenOffset = function(newOffset) {
+		infoPanelNode.data.dispChildrenOffset = newOffset;
+		updateChildrenArray(infoPanelNode);
+		loadInfoPanel();
+		this.st.removeSubtree(infoPanelNode.id, false, 'animate', {  
+			onComplete: function() {  
+				st.addSubtree(infoPanelNode, 'animate');  
+			}  
+		});
 	};
 	
 	/**
@@ -233,6 +266,28 @@ function GraphView(gPanel, iPanel, cPanel) {
 				Config.servers, layout.server);
 		return html + ".</li>";
 	};
+	
+	/*
+	 * Create a link for changing the dispChildrenOffset value of the current
+	 * infoPanelNode.
+	 * 
+	 * @param string label link text
+	 * @param int offset the new offset
+	 */
+	var createDispChildrenOffsetLink = function(label, offset) {
+		return '&nbsp;<a href="javascript:view.updateDispChildrenOffset('
+			+ offset + ')">' + label + '</a>&nbsp;';
+	};
+	
+	/**
+	 * Set centered node in model. Deligate the storing and notification of
+	 * observers to the model.
+	 * 
+	 * @param node new centered node
+	 */
+	this.setCenterNode = function(node) {
+		model.setCenterNode(model.getNode(node.id));
+	};
 
 	/**
 	 * See java.util.Observer.update() in the official java api.
@@ -275,7 +330,36 @@ function GraphView(gPanel, iPanel, cPanel) {
 		// This is done by collecting the information (stored in the data property) 
 		// for all the nodes adjacent to the centered node.
         var html = "<h4>" + infoPanelNode.data.name + "</h4>";
-        html += "<b>Connections:</b><ul>";
+        var maxDispChildIndex = Math.min(infoPanelNode.data.children.length,
+    			infoPanelNode.data.dispChildrenOffset 
+    			+ infoPanelNode.data.dispChildrenCount);
+        html += "<b>Connections:</b><p>";
+        if (infoPanelNode.data.dispChildrenOffset > 0) {
+        	html += createDispChildrenOffsetLink("&laquo;", 0);
+        }
+        if (infoPanelNode.data.dispChildrenOffset 
+        		- infoPanelNode.data.dispChildrenCount > 0) {
+        	html += createDispChildrenOffsetLink("&lsaquo;", 
+        			infoPanelNode.data.dispChildrenOffset 
+            		- infoPanelNode.data.dispChildrenCount);
+        }
+        html += (infoPanelNode.data.dispChildrenOffset+1) + "-" + maxDispChildIndex
+    	+ " of " + infoPanelNode.data.children.length;
+        if (infoPanelNode.data.dispChildrenOffset 
+        		+ 2*infoPanelNode.data.dispChildrenCount < 
+        		infoPanelNode.data.children.length) {
+        	html += createDispChildrenOffsetLink("&rsaquo;", 
+        			infoPanelNode.data.dispChildrenOffset 
+            		+ infoPanelNode.data.dispChildrenCount);
+        }
+        if (infoPanelNode.data.dispChildrenOffset 
+        		+ infoPanelNode.data.dispChildrenCount < 
+        		infoPanelNode.data.children.length) {
+        	html += createDispChildrenOffsetLink("&raquo;", 
+        			Math.max(0, infoPanelNode.data.children.length -
+        					infoPanelNode.data.dispChildrenCount));
+        }
+        html += "</p><ul>";
         for (var i in infoPanelNode.children) {
         	var adj = infoPanelNode.children[i];
             if (adj.data) {

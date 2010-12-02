@@ -2,26 +2,26 @@ var Config = {
 	//rootNodeId: "http://harth.org/andreas/foaf#ah",
 	rootNodeId: "http://dblp.l3s.de/d2r/resource/publications/books/aw/AbiteboulHV95",
 	defaultNodeLayout : {
-		rendering: "rectangle",
+		rendering: "stroke-rect",
 		color: "default",
 		//server: "deri",
 		server: "l3s",
 		style: [ ]
 	},
 	nodeRenderings : {
-		"circle" : true, 
-		"triangle" : true,
-		"rectangle" : true,
-		"star" : true,
-		"square" : true,
-		"none" : true
+		"stroke-rect" : true,
+		"stroke-ellipse" : true
 	},
 	colors : {
 		"default" : "#ddddaa",
+		"blue" : "#aaaaff",
+		"gray" : "#aaaaaa",
+		"green" : "#00ff00",
 		"red" : "#ff0000",
 		"turquoise" : "#008888",
-		"yellow" : "#ffff00",
-		"green" : "#00ff00"
+		"white" : "#ffffff",
+		"yellow" : "#ffff00"
+		
 	},
 	servers : {
 		"deri" : {
