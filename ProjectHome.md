@@ -1,0 +1,3 @@
+_Semanticgraph_ enables you to explore Linked Open Data by visualizing them in a graph which could be traversed in Web 2.0 style. [The JavaScript InfoVis Toolkit](http://thejit.org/) provides a pretty rendering and animation environment for graphs. Code outside this library is based on jQuery. Nodes and Edges can be defined for your very own propose and data as long as there is a HTTP server which sends result datasets when it receives an SPARQL Query passed by a HTTP parameter.
+
+This Project is developed by [Felix Stahlberg](http://www.xilef-software.e8u.de/en/) within the scope of a student assistant job at [AIFB](http://www.aifb.kit.edu/web/Hauptseite/en) at [Karlsruhe Institute of Technology](http://www.kit.edu/english/index.php).
